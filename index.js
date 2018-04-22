@@ -4,10 +4,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const partials = require('express-partials');
 const AWS = require('aws-sdk');
+var s3 = new AWS.S3();
 const cookieParser = require('cookie-parser');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
-const multer  = require('multer');
+const multer = require('multer');
 const upload = multer();
 
 let dynamoDb;
@@ -19,13 +20,9 @@ if (IS_OFFLINE === 'true') {
 } else {
   dynamoDb = new AWS.DynamoDB.DocumentClient();
 }
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(partials());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use('/', express.static(__dirname + '/public'));
 
 const secret = process.env.SECRET || 'shhhhhh';
 
@@ -48,23 +45,19 @@ const verifyJWT = (req, res, next) => {
 };
 
 app.get('/', (req, res) => {
-  res.render('login');
-});
-
-app.get('/images', verifyJWT, (req, res) => {
-  res.render('upload');
-});
-
-app.post('/images', verifyJWT, upload.single('photo'), (req, res) => {
-  console.log(req.file, 'files');
-  console.log(req.body, 'body');
-  res.json('to be completed');
+  res.send('Welcome to Alex Leigh\'s page');
 });
 
 app.post('/login', (req, res) => {
   const {username, password} = req.body;
   if (username === 'alexleigh' && password === 'password') {
-    const token = jwt.sign({admin: username}, secret);
+    const params = {
+      admin: username,
+      auth:  'magic',
+      agent: req.headers['user-agent'],
+      exp:   Math.floor(new Date().getTime()/1000) + 7*24*60*60;
+    }
+    const token = jwt.sign(params, secret);
     res.cookie('jwtToken', token, {maxAge: 900000, httpOnly: true});
     res.redirect('/images');
   } else {
@@ -117,5 +110,5 @@ app.delete('/projects', verifyJWT, (req, res) => {
     res.json(`Project deleted: ${projectName}`);
   });
 });
-app.listen(3000);
+
 module.exports.handler = serverless(app);
