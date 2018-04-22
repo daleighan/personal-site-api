@@ -14,6 +14,18 @@ app.get('/', (req, res) => {
   res.send('hello from lambda');
 });
 
+app.get('/projects', (req, res) => {
+  const params = {
+    TableName: PROJECTS_TABLE,
+  };
+  dynamoDb.scan(params, (error, result) => {
+    if (error) {
+      res.status(400).json({error});
+    }
+    res.json(result);
+  });
+});
+
 app.post('/projects', (req, res) => {
   const {projectName, description} = req.body;
   const params = {
@@ -25,8 +37,7 @@ app.post('/projects', (req, res) => {
   };
   dynamoDb.put(params, error => {
     if (error) {
-      console.log(error);
-      res.status(400).json({error: 'Could not create user'});
+      res.status(400).json({error});
     }
     res.json({projectName, description});
   });
