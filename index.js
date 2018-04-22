@@ -1,8 +1,8 @@
 const serverless = require('serverless-http');
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var partials = require('express-partials');
 const AWS = require('aws-sdk');
 
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
@@ -13,15 +13,17 @@ if (IS_OFFLINE === 'true') {
     region: 'localhost',
     endpoint: 'http://localhost:8000',
   });
-  console.log(dynamoDb);
 } else {
   dynamoDb = new AWS.DynamoDB.DocumentClient();
 }
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(partials());
 
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('hello from lambda');
+  res.render('login');
 });
 
 app.get('/projects', (req, res) => {
