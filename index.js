@@ -55,7 +55,7 @@ app.post('/login', (req, res) => {
       admin: username,
       auth:  'magic',
       agent: req.headers['user-agent'],
-      exp:   Math.floor(new Date().getTime()/1000) + 7*24*60*60;
+      exp:   Math.floor(new Date().getTime()/1000) + 7*24*60*60,
     }
     const token = jwt.sign(params, secret);
     res.cookie('jwtToken', token, {maxAge: 900000, httpOnly: true});
