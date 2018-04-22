@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/daleighan/personal-site-api#readme",
   "dependencies": {
+    "aws-sdk": "^2.226.1",
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "serverless-http": "^1.5.5"
   }
