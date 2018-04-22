@@ -54,8 +54,20 @@ app.post('/projects', (req, res) => {
   });
 });
 
-//app.delete('/projects' (req, res) => {
-//  res.json('Project deleted');
-//});
+app.delete('/projects', (req, res) => {
+  const {projectName} = req.body;
+  const params = {
+    TableName: PROJECTS_TABLE,
+    Key: {
+      projectName,
+    }
+  }
+  dynamoDb.delete(params, error => {
+    if (error) {
+      res.status(400).json({error});
+    }
+    res.json(`Project deleted: ${projectName}`);
+  });
+});
 
 module.exports.handler = serverless(app);
