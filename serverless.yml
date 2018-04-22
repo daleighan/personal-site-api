@@ -43,3 +43,13 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ProjectsTable
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline #serverless-offline needs to be last in the list
+
+custom:
+  tableName: 'ProjectsTable'
+  dynamodb:
+    start:
+      migrate: true
