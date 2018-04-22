@@ -7,6 +7,17 @@ const AWS = require('aws-sdk');
 const cookieParser = require('cookie-parser');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
+const multer  = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'public')
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.fieldname + '-' + Date.now())
+    }
+});
+const upload = multer({storage: storage});
+
 let dynamoDb;
 if (IS_OFFLINE === 'true') {
   dynamoDb = new AWS.DynamoDB.DocumentClient({
@@ -19,10 +30,10 @@ if (IS_OFFLINE === 'true') {
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(partials());
-
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use('/', express.static(__dirname + '/public'));
 
 const secret = process.env.SECRET || 'shhhhhh';
 
@@ -50,6 +61,11 @@ app.get('/', (req, res) => {
 
 app.get('/images', verifyJWT, (req, res) => {
   res.render('upload');
+});
+
+app.post('/images', verifyJWT, upload.single('photo'), (req, res) => {
+  console.log(req.file, 'file');
+  res.json('to be completed');
 });
 
 app.post('/login', (req, res) => {
@@ -108,5 +124,5 @@ app.delete('/projects', verifyJWT, (req, res) => {
     res.json(`Project deleted: ${projectName}`);
   });
 });
-
+app.listen(3000);
 module.exports.handler = serverless(app);

@@ -1,5 +1,6 @@
 .serverless
 node_modules
+/public/*
 *.swp
 *.swo
 *.swn

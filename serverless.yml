@@ -47,9 +47,14 @@ resources:
 plugins:
   - serverless-dynamodb-local
   - serverless-offline #serverless-offline needs to be last in the list
+  - serverless-apigw-binary
 
 custom:
   tableName: 'ProjectsTable'
   dynamodb:
     start:
       migrate: true
+  apigwBinary:
+    types:           #list of mime-types
+      - 'image/jpeg'
+      - 'text/html'
