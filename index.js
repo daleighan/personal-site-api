@@ -2,9 +2,9 @@ const serverless = require('serverless-http');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-var partials = require('express-partials');
+const partials = require('express-partials');
 const AWS = require('aws-sdk');
-
+const cookieParser = require('cookie-parser');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
 let dynamoDb;
@@ -20,13 +20,50 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(partials());
 
+app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+const secret = process.env.SECRET || 'shhhhhh';
+
+const jwt = require('jsonwebtoken');
+
+const verifyJWT = (req, res, next) => {
+  const token = req.cookies.jwtToken;
+  if (token) {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        res.status(403).json('Invalid Token');
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  } else {
+    res.status(403).json('No Token Provided');
+  }
+};
 
 app.get('/', (req, res) => {
   res.render('login');
 });
 
-app.get('/projects', (req, res) => {
+app.get('/images', verifyJWT, (req, res) => {
+  res.render('upload');
+});
+
+app.post('/login', (req, res) => {
+  const {username, password} = req.body;
+  if (username === 'alexleigh' && password === 'password') {
+    const token = jwt.sign({admin: username}, secret);
+    res.cookie('jwtToken', token, {maxAge: 900000, httpOnly: true});
+    res.redirect('/images');
+  } else {
+    res.json('invalid credentials');
+  }
+});
+
+app.get('/projects', verifyJWT, (req, res) => {
   const params = {
     TableName: PROJECTS_TABLE,
   };
@@ -38,7 +75,7 @@ app.get('/projects', (req, res) => {
   });
 });
 
-app.post('/projects', (req, res) => {
+app.post('/projects', verifyJWT, (req, res) => {
   const {projectName, description} = req.body;
   const params = {
     TableName: PROJECTS_TABLE,
@@ -56,14 +93,14 @@ app.post('/projects', (req, res) => {
   });
 });
 
-app.delete('/projects', (req, res) => {
+app.delete('/projects', verifyJWT, (req, res) => {
   const {projectName} = req.body;
   const params = {
     TableName: PROJECTS_TABLE,
     Key: {
       projectName,
-    }
-  }
+    },
+  };
   dynamoDb.delete(params, error => {
     if (error) {
       res.status(400).json({error});
