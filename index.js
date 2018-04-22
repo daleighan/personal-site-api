@@ -8,15 +8,7 @@ const cookieParser = require('cookie-parser');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
 const multer  = require('multer');
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'public')
-    },
-    filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now())
-    }
-});
-const upload = multer({storage: storage});
+const upload = multer();
 
 let dynamoDb;
 if (IS_OFFLINE === 'true') {
@@ -64,7 +56,8 @@ app.get('/images', verifyJWT, (req, res) => {
 });
 
 app.post('/images', verifyJWT, upload.single('photo'), (req, res) => {
-  console.log(req.file, 'file');
+  console.log(req.file, 'files');
+  console.log(req.body, 'body');
   res.json('to be completed');
 });
 
