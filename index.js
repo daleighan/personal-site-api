@@ -5,7 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const AWS = require('aws-sdk');
 
-const USERS_TABLE = process.env.USERS_TABLE;
+const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 app.use(bodyParser.json());
@@ -15,16 +15,20 @@ app.get('/', (req, res) => {
 });
 
 app.post('/projects', (req, res) => {
-  const {name, description} = req.body;
+  const {projectName, description} = req.body;
   const params = {
-    name,
-    description,
+    TableName: PROJECTS_TABLE,
+    Item: {
+      projectName,
+      description,
+    },
   };
-  dynamoDb.put((params, err) => {
-    if (err) {
-      res.json(`Error adding project, ${err}`);
+  dynamoDb.put(params, error => {
+    if (error) {
+      console.log(error);
+      res.status(400).json({error: 'Could not create user'});
     }
-    res.json('Project successfully added');
+    res.json({projectName, description});
   });
 });
 

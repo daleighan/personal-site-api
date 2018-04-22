@@ -1,4 +1,4 @@
-service: alex-leigh-website-api
+service: my-website-api
 
 provider:
   name: aws
@@ -17,7 +17,7 @@ provider:
       Resource:
         - { "Fn::GetAtt": ["ProjectsDynamoDBTable", "Arn" ] }
   environment:
-    PROJECTS_TABLE: Projects
+    PROJECTS_TABLE: ProjectsTable
 
 functions:
   app:
@@ -37,9 +37,9 @@ resources:
             AttributeType: S
         KeySchema:
           -
-            AttributeName: userId
+            AttributeName: projectName
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: Projects
+        TableName: ProjectsTable
