@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
-const secret = process.env.SECRET || 'shhhhhhhh';
+const secret = process.env.SECRET;
 const AWS = require('aws-sdk');
 
 let dynamoDb;
@@ -63,6 +63,39 @@ const addProject = (req, res) => {
   });
 };
 
+const updateProject = (req, res) => {
+  const {projectName} = req.body;
+  let UpdateExpression = 'set ';
+  let ExpressionAttributeValues = {};
+  let attrVal = 'a';
+  for (let key in req.body) {
+    if (key !== 'projectName') {
+      UpdateExpression += `${key} = :${attrVal}, `;
+      ExpressionAttributeValues[`:${attrVal}`] = req.body[key];
+      attrVal = String.fromCharCode(attrVal.charCodeAt() + 1)
+    }  
+  }
+  UpdateExpression = UpdateExpression.replace(/,\s*$/, '');
+  console.log(UpdateExpression);
+  console.log(ExpressionAttributeValues);
+  const params = {
+    TableName: PROJECTS_TABLE,
+    Key: {
+      projectName,
+    },
+    UpdateExpression,
+    ExpressionAttributeValues,
+    ReturnValues: 'UPDATED_NEW'
+  };
+  dynamoDb.update(params, (error, data) => {
+    if (error) {
+      res.status(400).json({error});
+    } else {
+      res.json(data);
+    }
+  });
+};
+
 const deleteProject = (req, res) => {
   const {projectName} = req.body;
   const params = {
@@ -79,4 +112,11 @@ const deleteProject = (req, res) => {
   });
 };
 
-module.exports = {root, login, getProjects, addProject, deleteProject};
+module.exports = {
+  root,
+  login,
+  getProjects,
+  addProject,
+  updateProject,
+  deleteProject,
+};
