@@ -4,7 +4,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const partials = require('express-partials');
 const AWS = require('aws-sdk');
-var s3 = new AWS.S3();
 const cookieParser = require('cookie-parser');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
@@ -25,7 +24,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 const secret = process.env.SECRET || 'shhhhhh';
-
 const jwt = require('jsonwebtoken');
 
 const verifyJWT = (req, res, next) => {
@@ -78,12 +76,10 @@ app.get('/projects', verifyJWT, (req, res) => {
 });
 
 app.post('/projects', verifyJWT, (req, res) => {
-  const {projectName, description} = req.body;
   const params = {
     TableName: PROJECTS_TABLE,
     Item: {
-      projectName,
-      description,
+      ...req.body,
       pictures: [],
     },
   };
@@ -91,7 +87,7 @@ app.post('/projects', verifyJWT, (req, res) => {
     if (error) {
       res.status(400).json({error});
     }
-    res.json({projectName, description});
+    res.json(params.Item);
   });
 });
 
