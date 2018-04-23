@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
 const IS_OFFLINE = process.env.IS_OFFLINE;
-const secret = process.env.SECRET || 'shhhhhhhhh';
+const secret = process.env.SECRET || 'shhhhhhhh';
 const AWS = require('aws-sdk');
 
 let dynamoDb;
@@ -20,7 +20,7 @@ const root = (req, res) => {
 
 const login = (req, res) => {
   const {username, password} = req.body;
-  if (username === 'alexleigh' && password === 'password') {
+  if (username === process.env.USERNAME && password === process.env.PASSWORD) {
     const params = {
       admin: username,
       auth: 'magic',
@@ -61,7 +61,7 @@ const addProject = (req, res) => {
     }
     res.json(params.Item);
   });
-}
+};
 
 const deleteProject = (req, res) => {
   const {projectName} = req.body;
@@ -77,6 +77,6 @@ const deleteProject = (req, res) => {
     }
     res.json(`Project deleted: ${projectName}`);
   });
-}
+};
 
 module.exports = {root, login, getProjects, addProject, deleteProject};
