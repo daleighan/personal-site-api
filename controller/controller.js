@@ -76,8 +76,6 @@ const updateProject = (req, res) => {
     }  
   }
   UpdateExpression = UpdateExpression.replace(/,\s*$/, '');
-  console.log(UpdateExpression);
-  console.log(ExpressionAttributeValues);
   const params = {
     TableName: PROJECTS_TABLE,
     Key: {
