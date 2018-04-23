@@ -88,9 +88,8 @@ const updateProject = (req, res) => {
   dynamoDb.update(params, (error, data) => {
     if (error) {
       res.status(400).json({error});
-    } else {
-      res.json(data);
     }
+    res.json(data);
   });
 };
 
