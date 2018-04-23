@@ -5,7 +5,7 @@ const verifyJWT = require('../middleware/verifyJWT');
 
 router.get('/', root);
 router.post('/login', login);
-router.get('/projects', verifyJWT, getProjects);
+router.get('/projects', getProjects);
 router.post('/projects', verifyJWT, addProject);
 router.put('/projects', verifyJWT, updateProject);
 router.delete('/projects', verifyJWT, deleteProject);

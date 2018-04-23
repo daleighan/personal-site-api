@@ -72,8 +72,8 @@ const updateProject = (req, res) => {
     if (key !== 'projectName') {
       UpdateExpression += `${key} = :${attrVal}, `;
       ExpressionAttributeValues[`:${attrVal}`] = req.body[key];
-      attrVal = String.fromCharCode(attrVal.charCodeAt() + 1)
-    }  
+      attrVal = String.fromCharCode(attrVal.charCodeAt() + 1);
+    }
   }
   UpdateExpression = UpdateExpression.replace(/,\s*$/, '');
   const params = {
@@ -83,7 +83,7 @@ const updateProject = (req, res) => {
     },
     UpdateExpression,
     ExpressionAttributeValues,
-    ReturnValues: 'UPDATED_NEW'
+    ReturnValues: 'UPDATED_NEW',
   };
   dynamoDb.update(params, (error, data) => {
     if (error) {
