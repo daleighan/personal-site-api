@@ -52,7 +52,6 @@ const addProject = (req, res) => {
     TableName: PROJECTS_TABLE,
     Item: {
       ...req.body,
-      pictures: [],
     },
   };
   dynamoDb.put(params, error => {
