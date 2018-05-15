@@ -15,7 +15,7 @@ PASSWORD=[password to set here]
 ## Routes
 Any of the routes below that are marked as secured require a token acquired from the `login` route.
 
-#### Route: `/login`:
+### Route: `/login`:
 * POST request will return the JWT that is needed for access to the secured routes of this API. The body of the request must be: 
 
 ```
