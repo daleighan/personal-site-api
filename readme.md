@@ -29,21 +29,21 @@ Any of the routes below that are marked as secured require a token acquired from
 
 * GET request will return all of the project entries contained in the table PROJECTS_TABLE
 * (Secured) POST request will add a project to the table. The only required property is projectName, but any others will be added to the table entry. The body of the request must be:
-```json
+```
 {
 	projectName: [your project's name],
 	...[any other props]
 }
 ```
 * (Secured) PUT request will update an existing project in the table. The projectName property is needed. Any new properties are added to the table entry and any  properties that need to be updated are updated. The body of the request must be:
- ```json
+ ```
 {
 	projectName: [your project's name],
 	...[props to update]
 }
 ```
 * (Secured) DELETE request will delete an entry in the PROJECT_TABLE. The body of the request must be:
-```json
+```
 {
 	projectName: [your project's name]
 }
