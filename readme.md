@@ -1,5 +1,5 @@
 # Alex Leigh's Portfolio Site API
-This API is the backend for the portfolio site found at [daleighan.com](https://daleighan.com).
+This API is the backend for the portfolio site found at [daleighan.com](https://daleighan.com). The repo for the site is found [here](https://github.com/daleighan/personal-site)
 ## About
 * Requires a .env file containing the following information to run locally (The values of these items may be whatever you want): 
 ```
